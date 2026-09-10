@@ -1,0 +1,649 @@
+/* ==========================================================================
+   Bruna Fernandes Nietto — folha única
+   1. Tokens · 2. Base · 3. Cabeçalho · 4. Hero · 5. Faixa · 6. Sobre
+   7. Portfólio · 8. Lightbox · 9. Contato · 10. Rodapé · 11. Movimento
+   ========================================================================== */
+
+/* 1. Tokens ---------------------------------------------------------------- */
+
+:root {
+  /* Mesmo fundo do JPEG da marca, para ela se dissolver na página. */
+  --papel: #F7F7F7;
+
+  --tinta: #24303F;
+  --tinta-suave: #4A5666;
+
+  --azul: #5B7DA6;
+  --azul-tinta: #3C5A80;
+  --rose: #D98C8C;
+  --rose-tinta: #A85A5A;
+  --oliva: #8A9A5B;
+  --oliva-tinta: #5F6B3A;
+
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --medida: 58ch; /* ~65 caracteres por linha na pilha system-ui */
+  --cabecalho-altura: 4.25rem;
+  --margem: clamp(1.25rem, 5vw, 5rem);
+  --faixa-espaco: 1.25rem;
+}
+
+/* 2. Base ------------------------------------------------------------------ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--papel);
+  color: var(--tinta-suave);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+body.sem-rolagem { overflow: hidden; }
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  color: var(--tinta);
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0;
+}
+
+p { margin: 0 0 1.15em; }
+
+img { display: block; max-width: 100%; height: auto; }
+
+a { color: var(--azul-tinta); }
+a:hover { color: var(--rose-tinta); }
+
+button { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--azul-tinta);
+  outline-offset: 3px;
+}
+
+section[id], body[id] { scroll-margin-top: calc(var(--cabecalho-altura) + 1rem); }
+
+.so-leitor-de-tela {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pular {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 200;
+  padding: .7rem 1.1rem;
+  background: var(--papel);
+  color: var(--tinta);
+  border: 1px solid var(--tinta);
+  text-decoration: none;
+  transition: top .2s ease;
+}
+.pular:focus { top: 1rem; }
+
+.titulo-secao {
+  font-size: clamp(1.9rem, 4vw, 2.9rem);
+  margin-bottom: 1.2rem;
+}
+.titulo-secao::after {
+  content: "";
+  display: block;
+  width: 3.5rem;
+  height: 3px;
+  margin-top: .9rem;
+  border-radius: 2px;
+  background: var(--rose);
+  opacity: .75;
+}
+
+.assinatura {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--tinta);
+  letter-spacing: .01em;
+}
+
+.botao {
+  display: inline-block;
+  padding: .85rem 1.9rem;
+  background: var(--tinta);
+  color: var(--papel);
+  font-family: var(--sans);
+  font-size: 1rem;
+  text-decoration: none;
+  border: 1px solid var(--tinta);
+  transition: background .25s ease, color .25s ease;
+}
+.botao:hover, .botao:focus-visible {
+  background: transparent;
+  color: var(--tinta);
+}
+
+/* 3. Cabeçalho ------------------------------------------------------------- */
+
+.cabecalho {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 90;
+  background: transparent;
+  transition: background-color .3s ease, box-shadow .3s ease;
+}
+.cabecalho.is-rolado,
+.cabecalho.is-menu-aberto {
+  background: var(--papel);
+  box-shadow: 0 10px 30px -24px rgba(36, 48, 63, .8);
+}
+
+.cabecalho__interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: var(--cabecalho-altura);
+  padding-inline: var(--margem);
+}
+
+/* O fundo do JPEG da marca é o próprio --papel, então ele já some sozinho. */
+.marca {
+  display: block;
+  line-height: 0;
+}
+.marca__img {
+  width: auto;
+  height: clamp(1.5rem, 4.5vw, 1.9rem);
+  transition: opacity .2s ease;
+}
+.marca:hover .marca__img { opacity: .75; }
+
+.menu-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .5rem .2rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.menu-botao__texto { font-size: .95rem; }
+.menu-botao__tracos {
+  display: grid;
+  gap: 4px;
+  width: 22px;
+}
+.menu-botao__tracos span {
+  display: block;
+  height: 2px;
+  background: var(--tinta);
+  transition: transform .25s ease, opacity .25s ease;
+}
+.menu-botao[aria-expanded="true"] .menu-botao__tracos span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.menu-botao[aria-expanded="true"] .menu-botao__tracos span:nth-child(2) { opacity: 0; }
+.menu-botao[aria-expanded="true"] .menu-botao__tracos span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.navegacao__lista {
+  display: flex;
+  gap: clamp(1rem, 2.5vw, 2.2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navegacao__lista a {
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: .98rem;
+  padding-block: .25rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s ease, color .2s ease;
+}
+.navegacao__lista a:hover,
+.navegacao__lista a:focus-visible {
+  color: var(--rose-tinta);
+  border-bottom-color: var(--rose);
+}
+
+@media (max-width: 767px) {
+  .navegacao {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--papel);
+    box-shadow: 0 20px 40px -30px rgba(36, 48, 63, .9);
+    transform-origin: top;
+    display: none;
+  }
+  .navegacao.is-aberta { display: block; }
+  .navegacao__lista {
+    flex-direction: column;
+    gap: 0;
+    padding: .5rem var(--margem) 1.5rem;
+  }
+  .navegacao__lista a {
+    display: block;
+    padding: .85rem 0;
+    border-bottom: 1px solid rgba(36, 48, 63, .1);
+  }
+}
+
+@media (min-width: 768px) {
+  .menu-botao { display: none; }
+}
+
+/* 4. Hero ------------------------------------------------------------------ */
+
+.hero {
+  position: relative;
+  min-height: 92svh;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  padding: calc(var(--cabecalho-altura) + 3rem) var(--margem) 4rem;
+  overflow: hidden;
+}
+
+.hero__conteudo {
+  max-width: 44rem;
+}
+
+.hero__sobretitulo {
+  font-size: .95rem;
+  color: var(--tinta-suave);
+  margin-bottom: 1.4rem;
+}
+
+.hero__titulo {
+  margin: 0;
+  line-height: 0;
+}
+.hero__marca { width: min(100%, 34rem); }
+
+.hero__acao { margin: 2.2rem 0 0; }
+
+/* 5. Faixa de obras -------------------------------------------------------- */
+
+.faixa {
+  display: none;
+  overflow: hidden;
+  padding-block: clamp(1.5rem, 4vw, 2.75rem);
+  background: var(--papel);
+  border-block: 1px solid rgba(36, 48, 63, .08);
+}
+.faixa.is-pronta { display: block; }
+
+.faixa__pista {
+  display: flex;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: desliza 70s linear infinite;
+}
+.faixa:hover .faixa__pista,
+.faixa:focus-within .faixa__pista { animation-play-state: paused; }
+
+.faixa__item { margin-right: var(--faixa-espaco); }
+
+.faixa__botao {
+  display: block;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  height: clamp(8.5rem, 18vw, 14rem);
+  transition: transform .3s ease;
+}
+.faixa__botao:hover { transform: translateY(-4px); }
+.faixa__botao img {
+  height: 100%;
+  width: auto;
+  max-width: none;
+  object-fit: cover;
+  background: var(--papel);
+  border: 1px solid rgba(36, 48, 63, .1);
+}
+
+@keyframes desliza {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* 6. Sobre ----------------------------------------------------------------- */
+
+.sobre {
+  padding: clamp(4rem, 10vw, 8rem) var(--margem);
+}
+
+.sobre__interno {
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.sobre__retrato {
+  margin: 0 0 2.5rem;
+}
+.sobre__retrato img {
+  width: 100%;
+  border-radius: 2px;
+  box-shadow: 0 30px 60px -40px rgba(36, 48, 63, .75);
+}
+
+.sobre__texto { max-width: var(--medida); }
+.sobre__texto p { max-width: var(--medida); }
+
+@media (min-width: 900px) {
+  .sobre__interno {
+    display: grid;
+    grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+  /* O retrato desce um pouco e invade a coluna do texto: página, não grade. */
+  .sobre__retrato {
+    margin: 0;
+    transform: translate(clamp(0px, 2vw, 2.5rem), 3.5rem);
+  }
+  .sobre__texto { padding-top: 1rem; }
+}
+
+/* 7. Portfólio ------------------------------------------------------------- */
+
+.portfolio {
+  padding: clamp(4rem, 10vw, 8rem) var(--margem);
+  background: var(--papel);
+}
+
+.portfolio__cabecalho {
+  max-width: var(--medida);
+  margin-bottom: 2rem;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-bottom: 2.5rem;
+}
+
+.filtro {
+  padding: .5rem 1.1rem;
+  background: transparent;
+  border: 1px solid rgba(36, 48, 63, .25);
+  border-radius: 999px;
+  font-size: .95rem;
+  color: var(--tinta-suave);
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.filtro:hover { border-color: var(--rose); color: var(--rose-tinta); }
+.filtro[aria-pressed="true"] {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--papel);
+}
+
+.grupo { margin-bottom: clamp(3rem, 8vw, 5.5rem); }
+.grupo:last-child { margin-bottom: 0; }
+.grupo[hidden] { display: none; }
+
+.grupo__titulo {
+  font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+  max-width: var(--medida);
+  padding-bottom: .55rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  border-bottom: 1px solid rgba(36, 48, 63, .14);
+}
+
+.grupo__obras {
+  column-gap: clamp(1.25rem, 3vw, 2.5rem);
+}
+@media (min-width: 640px) { .grupo__obras { columns: 2; } }
+@media (min-width: 1100px) { .grupo__obras { columns: 3; } }
+
+.obra {
+  break-inside: avoid;
+  margin: 0 0 clamp(1.75rem, 4vw, 3rem);
+}
+
+.obra__botao {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: zoom-in;
+}
+/* A borda é o que separa a obra do papel: muita ilustração dela é recortada. */
+.obra__botao img {
+  width: 100%;
+  background: var(--papel);
+  border: 1px solid rgba(36, 48, 63, .1);
+  box-shadow: 0 22px 45px -38px rgba(36, 48, 63, .9);
+  transition: opacity .3s ease, transform .3s ease;
+}
+.obra__botao:hover img {
+  opacity: .92;
+  transform: translateY(-3px);
+}
+
+/* 8. Lightbox -------------------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(36, 48, 63, .93);
+}
+.lightbox[hidden] { display: none; }
+
+.lightbox__caixa {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(.5rem, 2vw, 1.5rem);
+  max-width: 72rem;
+  width: 100%;
+}
+
+.lightbox__figura {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+}
+.lightbox__img {
+  width: auto;
+  max-width: 100%;
+  max-height: 74vh;
+  margin-inline: auto;
+  background: var(--papel);
+}
+
+.lightbox__legenda {
+  margin-top: 1rem;
+  font-size: .9rem;
+  color: rgba(247, 247, 247, .78);
+}
+
+.lightbox__nav,
+.lightbox__fechar {
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  flex: 0 0 auto;
+  background: rgba(247, 247, 247, .12);
+  border: 1px solid rgba(247, 247, 247, .35);
+  border-radius: 50%;
+  color: var(--papel);
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+.lightbox__nav:hover,
+.lightbox__fechar:hover { background: rgba(247, 247, 247, .28); }
+.lightbox__nav svg,
+.lightbox__fechar svg { width: 1.4rem; height: 1.4rem; }
+
+.lightbox__fechar {
+  position: fixed;
+  top: clamp(.75rem, 3vw, 1.5rem);
+  right: clamp(.75rem, 3vw, 1.5rem);
+}
+
+.lightbox :focus-visible {
+  outline: 2px solid var(--papel);
+  outline-offset: 3px;
+}
+
+@media (max-width: 639px) {
+  .lightbox__caixa { flex-wrap: wrap; justify-content: center; }
+  .lightbox__figura { flex: 1 0 100%; order: -1; }
+  .lightbox__img { max-height: 58vh; }
+}
+
+/* 9. Contato --------------------------------------------------------------- */
+
+.contato {
+  padding: clamp(4rem, 10vw, 8rem) var(--margem);
+  background: var(--papel);
+}
+
+.contato__interno {
+  max-width: 60rem;
+  margin-inline: auto;
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+.contato__texto { max-width: var(--medida); }
+
+.contato__link { margin: 0; }
+
+.instagram {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: 1.15rem;
+  color: var(--azul-tinta);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(60, 90, 128, .4);
+  padding-bottom: .15rem;
+  transition: color .2s ease, border-color .2s ease;
+}
+.instagram:hover,
+.instagram:focus-visible {
+  color: var(--rose-tinta);
+  border-bottom-color: var(--rose);
+}
+.instagram__icone { width: 1.4em; height: 1.4em; }
+.instagram--pequeno { font-size: 1rem; }
+
+/* 10. Rodapé --------------------------------------------------------------- */
+
+.rodape {
+  padding: clamp(2.5rem, 6vw, 4rem) var(--margem);
+  background: var(--papel);
+  border-top: 1px solid rgba(36, 48, 63, .1);
+}
+
+.rodape__interno {
+  max-width: 72rem;
+  margin-inline: auto;
+  display: grid;
+  gap: 1.25rem;
+  align-items: center;
+}
+@media (min-width: 860px) {
+  .rodape__interno {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "assinatura nav instagram"
+      "direitos   nav direitos2";
+    gap: .75rem 2rem;
+  }
+  .assinatura--rodape { grid-area: assinatura; }
+  .rodape__nav { grid-area: nav; justify-self: center; }
+  .rodape__instagram { grid-area: instagram; justify-self: end; }
+  .rodape__direitos { grid-area: direitos; }
+}
+
+.assinatura--rodape {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.rodape__nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rodape__nav a {
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: .95rem;
+  border-bottom: 1px solid transparent;
+}
+.rodape__nav a:hover { color: var(--rose-tinta); border-bottom-color: var(--rose); }
+
+.rodape__instagram { margin: 0; }
+
+.rodape__direitos {
+  margin: 0;
+  font-size: .9rem;
+  color: var(--tinta-suave);
+}
+
+/* 11. Movimento ------------------------------------------------------------ */
+
+/* Uma sequência só, na carga do hero. O resto da página não anima ao rolar. */
+@keyframes sobe {
+  from { opacity: 0; transform: translateY(1.1em); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes surge {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hero__sobretitulo { animation: surge .8s ease-out .15s both; }
+.hero__marca { animation: sobe .9s cubic-bezier(.2, .7, .3, 1) .3s both; }
+.hero__acao { animation: sobe .8s ease-out .8s both; }
+.faixa { animation: surge 1s ease-out 1s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  /* Sem movimento: a faixa vira uma tira rolável e as cópias somem. */
+  .faixa__pista {
+    animation: none !important;
+    transform: none !important;
+  }
+  .faixa__item--copia { display: none; }
+  .faixa { overflow-x: auto; }
+}
